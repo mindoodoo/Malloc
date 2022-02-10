@@ -1,0 +1,5 @@
+main.c
+libmy_malloc.so
+**/*.o
+bin
+a.out
