@@ -3,3 +3,5 @@ libmy_malloc.so
 **/*.o
 bin
 a.out
+.vscode
+vgcore*

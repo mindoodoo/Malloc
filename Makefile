@@ -9,34 +9,28 @@
 CC = gcc
 
 # Output names
-TESTBIN = bin
 LIBNAME = libmy_malloc.so
 
 # Compiler flags
-LIBFLAGS = -shared -g3 -I./include
-TESTFLAGS = -Wall -g3 -I./include
+CFLAGS = -shared -g3 -I./include -fPIC -ldl
 
 # Source
-LIBSOURCE = malloc.c
-TESTSOURCE = main.c
+LIBSOURCE = malloc.c \
+	free.c
 
 # Objects
 LIBOBJ = $(LIBSOURCE:.c=.o)
-TESTOBJ = $(TESTSOURCE:.c=.o)
 
 $(LIBNAME): $(LIBOBJ)
-	$(CC) -o $(LIBNAME) $(LIBOBJ) $(LIBFLAGS)
+	gcc -o $(LIBNAME) $(LIBOBJ) $(CFLAGS)
 
-$(TESTBIN): $(TESTOBJ)
-	$(CC) -o $(TESTBIN) $(TESTOBJ) $(TESTFLAGS)
-
-all: $(LIBNAME) $(TESTBIN)
+all: $(LIBNAME)
 
 clean:
 	rm -f *.o
 
 fclean: clean
-	rm -f $(LIBNAME) $(TESTBIN)
+	rm -f $(LIBNAME)
 
 re: fclean all
 
