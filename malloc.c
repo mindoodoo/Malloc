@@ -5,69 +5,56 @@
 ** .
 */
 
+#include <stdio.h>
 #include "include/malloc.h"
 
-void *first_block = NULL;
+size_t *first_block = NULL;
 
-void *first_alloc(size_t size)
+void increase_heap(size_t size)
 {
-    block_header_t *output = sbrk(0);
-    size_t alloc_size = size + sizeof(block_header_t);
-    int n2_pages = (alloc_size % (4096 * 2)) + 1;
-
-    sbrk(n2_pages * 4096 * 2);
-    output->size = alloc_size;
-    output->next = NULL;
-    first_block = output;
-
-    return output + sizeof(block_header_t);
+    size_t n_pages = (size / (4096 * 2)) * 2 + 2; // Time two because divided by PAGE_SIZE * 2,
+    // +2 for "surplus"
+    sbrk(n_pages * 4096);
 }
 
-void *find_free(block_header_t *start, size_t size)
+void *init_malloc(size_t size)
 {
-    block_header_t *head = start;
-    block_header_t *best_fit = NULL;
+    size_t allocated_size = size / 8 + 1; // Respect 8B allignment (2 words)
 
-    while (head) {
-        if (head->isFree && abs(best_fit->size - size) > abs(head->size - size))
-            best_fit = head;
-        head = head->next;
+    first_block = sbrk(0); // Get break location before breaking
+    allocated_size *= 8;
+    increase_heap(allocated_size);
+    *first_block = allocated_size;
+    *first_block |= 1;
+    *next_block(first_block, allocated_size) = 0; // Mark stopper
+    *next_block(first_block, allocated_size) |= 1; // Mark stopper as allocated
+    return header_offset(first_block); // Return pointer to allocated memory
+}
+
+void *best_fit()
+{
+    size_t *pointer;
+    size_t *head = first_block;
+     *((size_t*)first_block) + (*((size_t*)first_block) & 1); // Round up bitwise
+
+    while (1) {
+        if (*head == 0 && (*head & (1 << 1))) { // Check if stopper
+            return NULL;
+        }
     }
-    return best_fit;
-}
 
-void *create_block(size_t size)
-{
-    block_header_t *end = first_block;
-    block_header_t *output;
-
-    while (end->next) end = end->next;
-    if ((void *)(end + sizeof(block_header_t) + end->size) > sbrk(0))
-        sbrk(((size + sizeof(block_header_t)) % (4096 * 2) + 1) * (4096 * 2)); // Inch'allah
-    output = end + end->size + sizeof(block_header_t);
-    end->next = output;
-    output->isFree = 0;
-    output->size = size;
-    output->next = NULL;
-
-    return output + sizeof(block_header_t);
+    return NULL;
 }
 
 void *malloc(size_t size)
 {
-    block_header_t *target = NULL;
+    void *output = NULL;
 
     if (!size)
         return NULL;
     if (!first_block)
-        return first_alloc(size);
+        return init_malloc(size);
     else {
-        target = find_free(first_block, size + sizeof(block_header_t));
-        if (!target)
-            return create_block(size);
-        else {
-            target->isFree = 0;
-            return target + sizeof(block_header_t);
-        }
+        printf("Nothing.");
     }
 }

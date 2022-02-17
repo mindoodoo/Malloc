@@ -15,8 +15,7 @@ LIBNAME = libmy_malloc.so
 CFLAGS = -shared -g3 -I./include -fPIC -ldl
 
 # Source
-LIBSOURCE = malloc.c \
-	free.c
+LIBSOURCE = malloc.c
 
 # Objects
 LIBOBJ = $(LIBSOURCE:.c=.o)

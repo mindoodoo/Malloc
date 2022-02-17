@@ -13,15 +13,12 @@
 
 #define abs(x) ((x < 0) ? (x * -1) : (x))
 
-typedef struct block_header_s {
-    void *next;
-    int isFree;
-    size_t size;
-} block_header_t;
+#define header_offset(addr) (addr + 8)
 
-extern void *first_block;
+#define next_block(addr, size) (addr + 8 + size)
+
+extern size_t *first_block;
 
 void *malloc(size_t size);
-void free(void *ptr);
 
 #endif
