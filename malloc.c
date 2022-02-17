@@ -37,15 +37,15 @@ void *best_fit(size_t size)
     size_t *head = first_block;
 
     while (1) {
-        if (*head - 1 == 0 && (*head - 1 ) % 2 == 0) // Check if stopper (size 0 and last bit set)
+        if (*head ^ 1 == 0 && (*head & 1)) // Check if stopper (size 0 and last bit set)
             return NULL; // NOTE: Should try to understand bitwise operations better and improve hacky conditions
         if ((void *)head >= pgm_break)
             return NULL;
-        if (*head - 1 < size) // Check if block size is at least equal to size
+        if (*head ^ 1 < size) // Check if block size is at least equal to size
             continue;
-        if (abs((*head - 1) - size) < abs((*pointer - 1) - size))
+        if (abs((*head ^ 1) - size) < abs((*pointer ^ 1) - size))
             pointer = head;
-        head = next_block(head, (*head) - 1);
+        head = next_block(head, ((*head) ^ 1));
     }
     return NULL;
 }
@@ -58,13 +58,13 @@ void *alloc_block(size_t size)
 
     // Find next block
     while (1) {
-        if (*head - 1 == 0 && (*head - 1 ) % 2 == 0) // Check if stopper (size 0 and last bit set)
+        if (*head ^ 1 == 0 && (*head ^ 1 ) % 2 == 0) // Check if stopper (size 0 and last bit set)
             break;
         if ((void *)head >= pgm_break) {
             head = NULL;
             break;
         }
-        head = next_block(head, (*head) - 1);
+        head = next_block(head, ((*head) ^ 1));
     }
     if ((void *)(head + allocated_size) > pgm_break)
         increase_heap(allocated_size); // Inneficiency here
