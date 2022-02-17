@@ -16,7 +16,8 @@ CFLAGS = -shared -g3 -I./include -fPIC -ldl
 
 # Source
 LIBSOURCE = malloc.c \
-	free.c
+	free.c \
+	calloc.c
 
 # Objects
 LIBOBJ = $(LIBSOURCE:.c=.o)

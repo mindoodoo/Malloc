@@ -31,6 +31,8 @@ void shrink_heap(size_t *ptr) {
 
 void free(void *ptr)
 {
+    if (!ptr)
+        return;
     if (*(size_t*)ptr & 1) { // Check last bit
         *(size_t *)ptr ^= 1; // Clear last bit
         coalesce_next(ptr);
