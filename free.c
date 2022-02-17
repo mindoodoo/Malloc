@@ -33,6 +33,7 @@ void free(void *ptr)
 {
     if (!ptr)
         return;
+    ptr -= 8; // Move to head
     if (*(size_t*)ptr & 1) { // Check last bit
         *(size_t *)ptr ^= 1; // Clear last bit
         coalesce_next(ptr);
