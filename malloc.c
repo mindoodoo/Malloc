@@ -12,22 +12,22 @@ size_t *first_block = NULL;
 
 void increase_heap(size_t size)
 {
-    size_t n_pages = (size / (4096 * 2)) * 2 + 2; // Time two because divided by PAGE_SIZE * 2,
-    // +2 for "surplus"
+    size_t n_pages = (size / (4096 * 2)) * 2 + 2;
+    
     sbrk(n_pages * 4096);
 }
 
 void *init_malloc(size_t size)
 {
-    size_t allocated_size = (size / 8 + 1) * 8; // Respect 8B allignment (2 words)
+    size_t allocated_size = (size / 8 + 1) * 8;
 
-    first_block = sbrk(0); // Get break location before breaking
+    first_block = sbrk(0);
     increase_heap(allocated_size);
     *first_block = allocated_size;
     *first_block |= 1;
-    *(size_t *)next_block(first_block, allocated_size) = 0; // Mark stopper
-    *(size_t *)next_block(first_block, allocated_size) |= 1; // Mark stopper as allocated
-    return first_block + 8; // Return pointer to allocated memory (taking into account header offset)
+    *(size_t *)next_block(first_block, allocated_size) = 0;
+    *(size_t *)next_block(first_block, allocated_size) |= 1;
+    return first_block + 8;
 }
 
 void *best_fit(size_t size)
@@ -37,11 +37,11 @@ void *best_fit(size_t size)
     size_t *head = first_block;
 
     while (1) {
-        if (*head ^ 1 == 0 && (*head & 1)) // Check if stopper (size 0 and last bit set)
-            return NULL; // NOTE: Should try to understand bitwise operations better and improve hacky conditions
+        if (*head ^ 1 == 0 && (*head & 1))
+            return NULL;
         if ((void *)head >= pgm_break)
             return NULL;
-        if (*head ^ 1 < size) // Check if block size is at least equal to size
+        if (*head ^ 1 < size)
             continue;
         if (!(*head & 1) && abs((*head ^ 1) - size) < abs((*pointer ^ 1) - size))
             pointer = head;
@@ -58,9 +58,8 @@ void *alloc_block(size_t size)
     void *pgm_break = sbrk(0);
     size_t *head = first_block;
 
-    // Find next block
     while (1) {
-        if (*head ^ 1 == 0 && (*head & 1)) // Check if stopper (size 0 and last bit set)
+        if (*head ^ 1 == 0 && (*head & 1))
             break;
         if ((void *)head >= pgm_break) {
             head = NULL;
@@ -69,10 +68,10 @@ void *alloc_block(size_t size)
         head = next_block(head, ((*head) ^ 1));
     }
     if ((void *)(head + allocated_size) > pgm_break)
-        increase_heap(allocated_size); // Inneficiency here
+        increase_heap(allocated_size);
     *head = allocated_size;
     *head |= 1;
-    *(size_t *)(next_block(head, allocated_size)) = 1; // Same as =0 and |=1
+    *(size_t *)(next_block(head, allocated_size)) = 1;
     return (head + 8);
 }
 
