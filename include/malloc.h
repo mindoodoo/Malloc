@@ -13,11 +13,9 @@
 
 #define abs(x) ((x < 0) ? (x * -1) : (x))
 
-#define header_offset(addr) (addr + 8)
-
-#define next_block(addr, size) (addr + 8 + size)
-
 extern size_t *first_block;
+
+void *next_block(void *addr, size_t size);
 
 void *malloc(size_t size);
 void *calloc(size_t nmemb, size_t size);

@@ -25,9 +25,9 @@ void *init_malloc(size_t size)
     increase_heap(allocated_size);
     *first_block = allocated_size;
     *first_block |= 1;
-    *next_block(first_block, allocated_size) = 0; // Mark stopper
-    *next_block(first_block, allocated_size) |= 1; // Mark stopper as allocated
-    return header_offset(first_block); // Return pointer to allocated memory
+    *(size_t *)next_block(first_block, allocated_size) = 0; // Mark stopper
+    *(size_t *)next_block(first_block, allocated_size) |= 1; // Mark stopper as allocated
+    return first_block + 8; // Return pointer to allocated memory (taking into account header offset)
 }
 
 void *best_fit(size_t size)
@@ -70,7 +70,7 @@ void *alloc_block(size_t size)
         increase_heap(allocated_size); // Inneficiency here
     *head = allocated_size;
     *head |= 1;
-    *(next_block(head, allocated_size)) = 1; // Same as =0 and |=1
+    *(size_t *)(next_block(head, allocated_size)) = 1; // Same as =0 and |=1
     return head;
 }
 
