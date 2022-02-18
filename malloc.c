@@ -58,7 +58,7 @@ void *alloc_block(size_t size)
 
     // Find next block
     while (1) {
-        if (*head ^ 1 == 0 && (*head ^ 1 ) % 2 == 0) // Check if stopper (size 0 and last bit set)
+        if (*head ^ 1 == 0 && (*head & 1)) // Check if stopper (size 0 and last bit set)
             break;
         if ((void *)head >= pgm_break) {
             head = NULL;
