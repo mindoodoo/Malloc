@@ -15,7 +15,8 @@ void coalesce_next(size_t *ptr)
         *ptr += 8 + *next;
 }
 
-void shrink_heap(size_t *ptr) {
+void shrink_heap(size_t *ptr)
+{
     size_t *next = next_block(ptr, *ptr);
     void *pgm_break = sbrk(0);
     size_t size_to_break;
