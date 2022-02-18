@@ -71,7 +71,7 @@ void *alloc_block(size_t size)
     *head = allocated_size;
     *head |= 1;
     *(size_t *)(next_block(head, allocated_size)) = 1; // Same as =0 and |=1
-    return head;
+    return (head + 8);
 }
 
 void *malloc(size_t size)
