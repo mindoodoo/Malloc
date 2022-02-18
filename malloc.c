@@ -43,10 +43,12 @@ void *best_fit(size_t size)
             return NULL;
         if (*head ^ 1 < size) // Check if block size is at least equal to size
             continue;
-        if (abs((*head ^ 1) - size) < abs((*pointer ^ 1) - size))
+        if (!(*head & 1) && abs((*head ^ 1) - size) < abs((*pointer ^ 1) - size))
             pointer = head;
         head = next_block(head, ((*head) ^ 1));
     }
+    if (!(*pointer & 1))
+        return pointer;
     return NULL;
 }
 
