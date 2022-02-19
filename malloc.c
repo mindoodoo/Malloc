@@ -47,8 +47,10 @@ void *best_fit(size_t size)
             pointer = head;
         head = next_block(head, ((*head) ^ 1));
     }
-    if (!(*pointer & 1))
-        return pointer;
+    if (!(*pointer & 1)) {
+        *pointer |= 1;
+        return (pointer + 8);
+    }
     return NULL;
 }
 
