@@ -13,6 +13,7 @@
 
 #define abs(x) ((x < 0) ? (x * -1) : (x))
 
+// Global pointer to first block of allocated memory
 extern size_t *first_block;
 
 void *next_block(void *addr, size_t size);
